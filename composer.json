@@ -1,0 +1,22 @@
+{
+  "name": "eastwood/http",
+  "description": "An HTTP request tool",
+  "keywords": ["http", "request", "client"],
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "eastwood",
+      "email": "boss@haowei.me"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">=5.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "EastWood\\Http\\": "src/"
+    }
+  }
+}

@@ -4,6 +4,8 @@ namespace EastWood\Http;
 
 class HttpRequest
 {
+    const VERSION = '1.0.0';
+
     const METHOD_GET = 0x1;
     const METHOD_POST = 0x2;
     const METHOD_PUT = 0x3;
@@ -31,11 +33,19 @@ class HttpRequest
         $this->setMethod($method);
     }
 
+    public function getHeader()
+    {
+        return curl_getinfo($this->ch, CURLINFO_HEADER_OUT);
+    }
+
     /**
      * @return HttpResponse
      */
     public function send()
     {
+        curl_setopt($this->ch, CURLOPT_USERAGENT, 'Mozilla 5.0 ('.__CLASS__.' v'.self::VERSION.')');
+        curl_setopt($this->ch, CURLOPT_HEADER, true);
+        curl_setopt($this->ch, CURLINFO_HEADER_OUT, true);
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($this->ch, CURLOPT_URL, $this->url .
             (count($this->query) ? '?' . http_build_query($this->query) : '') .

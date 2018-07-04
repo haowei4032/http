@@ -4,14 +4,19 @@ namespace EastWood\Http;
 
 class HttpResponse
 {
-    private $ch;
+    private $ch = null;
+    private $raw = null;
     private $info = null;
+    private $header = null;
+    private $body = null;
 
     public function __construct($ch)
     {
         $this->ch = $ch;
-        curl_exec($this->ch);
+        $this->raw = curl_exec($this->ch);
         $this->info = curl_getinfo($this->ch);
+        $this->header = substr($this->raw, 0, $this->info['header_size']);
+        $this->body = substr($this->raw, $this->info['header_size']);
     }
 
     /**
@@ -19,7 +24,12 @@ class HttpResponse
      */
     public function getBody()
     {
-        return curl_multi_getcontent($this->ch);
+        return $this->body;
+    }
+
+    public function getHeader()
+    {
+        return $this->header;
     }
 
     /**
@@ -28,6 +38,11 @@ class HttpResponse
     public function getStatusCode()
     {
         return $this->info['http_code'];
+    }
+
+    public function asFile($file)
+    {
+        return file_put_contents($file, $this->__toString());
     }
 
     public function __toString()

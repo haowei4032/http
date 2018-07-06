@@ -30,7 +30,6 @@ class HttpRequest
     private $cookies = [];
     private $query = [];
     private $fragment = [];
-    private $headers = [];
 
     /**
      * HttpRequest constructor.
@@ -85,11 +84,6 @@ class HttpRequest
             (isset($parse['path']) ? $parse['path'] : ''));
         if (isset($parse['query'])) parse_str($parse['query'], $this->query);
         if (isset($parse['fragment'])) parse_str($parse['fragment'], $this->fragment);
-
-        $parse = parse_url($this->url);
-        $this->headers = [
-
-        ];
 
         return $this;
     }
@@ -166,7 +160,7 @@ class HttpRequest
      */
     public function setPostFields(array $fields)
     {
-        curl_setopt($this->ch, CURLOPT_POSTFIELDS, $fields);
+        curl_setopt($this->ch, CURLOPT_POSTFIELDS, http_build_query($fields));
         return $this;
     }
 
@@ -181,12 +175,12 @@ class HttpRequest
     }
 
     /**
-     * @param string $content_type
+     * @param string $contentType
      * @return HttpRequest
      */
-    public function setContentType($content_type)
+    public function setContentType($contentType)
     {
-        curl_setopt($this->ch, CURLOPT_HTTPHEADER, ['Content-Type' => $content_type]);
+        curl_setopt($this->ch, CURLOPT_HTTPHEADER, ['Content-Type' => $contentType]);
         return $this;
     }
 

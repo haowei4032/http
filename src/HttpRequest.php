@@ -6,25 +6,36 @@ class HttpRequest
 {
     const VERSION = '1.0.0';
 
-    const METHOD_GET = 0x1;
-    const METHOD_POST = 0x2;
-    const METHOD_PUT = 0x3;
-    const METHOD_DELETE = 0x4;
-    const METHOD_HEAD = 0x5;
-    const METHOD_OPTIONS = 0x6;
+    const METHOD_GET = 'GET';
+    const METHOD_POST = 'POST';
+    const METHOD_PUT = 'PUT';
+    const METHOD_PATCH = 'PATCH';
+    const METHOD_DELETE = 'DELETE';
+    const METHOD_COPY = 'COPY';
+    const METHOD_HEAD = 'HEAD';
+    const METHOD_OPTIONS = 'OPTIONS';
+    const METHOD_LINK = 'LINK';
+    const METHOD_UNLINK = 'UNLINK';
+    const METHOD_PURGE = 'PURGE';
+    const METHOD_LOCK = 'LOCK';
+    const METHOD_UNLOCK = 'UNLOCK';
+    const METHOD_PROPFIND = 'PROPFIND';
+    const METHOD_VIEW = 'VIEW';
 
     private $ch = null;
     private $_url = null;
 
+    private $method = self::METHOD_GET;
     private $url = null;
     private $cookies = [];
     private $query = [];
     private $fragment = [];
+    private $headers = [];
 
     /**
      * HttpRequest constructor.
      * @param string $url [optional]
-     * @param int $method [optional]
+     * @param string $method [optional]
      * @param array $options [optional]
      */
     public function __construct($url = null, $method = HttpRequest::METHOD_GET, array $options = [])
@@ -34,13 +45,8 @@ class HttpRequest
         $this->setMethod($method);
     }
 
-    public function getHeader()
-    {
-        return curl_getinfo($this->ch, CURLINFO_HEADER_OUT);
-    }
-
     /**
-     * @return HttpResponse
+     * @return \EastWood\Http\HttpResponse
      */
     public function send()
     {
@@ -79,6 +85,12 @@ class HttpRequest
             (isset($parse['path']) ? $parse['path'] : ''));
         if (isset($parse['query'])) parse_str($parse['query'], $this->query);
         if (isset($parse['fragment'])) parse_str($parse['fragment'], $this->fragment);
+
+        $parse = parse_url($this->url);
+        $this->headers = [
+
+        ];
+
         return $this;
     }
 
@@ -100,7 +112,7 @@ class HttpRequest
     {
         foreach ($cookies as $name => $value) {
             unset($cookies[$name]);
-            array_push($cookies, $name .'='. $value);
+            array_push($cookies, $name . '=' . $value);
         }
         $this->cookies = $cookies;
         curl_setopt($this->ch, CURLOPT_COOKIE, implode(';', $this->cookies));
@@ -108,33 +120,32 @@ class HttpRequest
     }
 
     /**
-     * @param int $method
+     * @param string $method
      * @return HttpRequest
      */
     public function setMethod($method)
     {
         switch ($method) {
-            case 0x1:
-                $method = 'GET';
+            case self::METHOD_GET:
+            case self::METHOD_POST:
+            case self::METHOD_PUT:
+            case self::METHOD_PATCH:
+            case self::METHOD_DELETE:
+            case self::METHOD_COPY:
+            case self::METHOD_HEAD:
+            case self::METHOD_OPTIONS:
+            case self::METHOD_LINK:
+            case self::METHOD_UNLINK:
+            case self::METHOD_PURGE:
+            case self::METHOD_LOCK:
+            case self::METHOD_UNLOCK:
+            case self::METHOD_PROPFIND:
+            case self::METHOD_VIEW:
                 break;
-            case 0x2;
-                $method = 'POST';
-                break;
-            case 0x3;
-                $method = 'PUT';
-                break;
-            case 0x4;
-                $method = 'DELETE';
-                break;
-            case 0x5;
-                $method = 'HEAD';
-                break;
-            case 0x6;
-                $method = 'OPTIONS';
-                break;
-
+            default:
+                $method = self::METHOD_GET;
         }
-
+        $this->method = $method;
         curl_setopt($this->ch, CURLOPT_CUSTOMREQUEST, $method);
         return $this;
     }

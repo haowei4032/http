@@ -27,6 +27,9 @@ class HttpResponse
         return $this->body;
     }
 
+    /**
+     * @return string
+     */
     public function getHeader()
     {
         return $this->header;
@@ -42,7 +45,7 @@ class HttpResponse
 
     public function asFile($file)
     {
-        return file_put_contents($file, $this->__toString());
+        return file_put_contents($file, $this->getBody());
     }
 
     public function __toString()

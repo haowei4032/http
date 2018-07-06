@@ -14,8 +14,10 @@ $request->setCookies([
 ]);
 $request->setQueryData(['id' => 1, 'name' => 2]);
 $request->setBody('xxxxxx');
-$response = $request->send();
-echo $response->getBody();
+echo $request->send();
+
+var_dump($request);
+
 
 
 

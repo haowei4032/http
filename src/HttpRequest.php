@@ -17,6 +17,7 @@ class HttpRequest
     private $_url = null;
 
     private $url = null;
+    private $cookies = [];
     private $query = [];
     private $fragment = [];
 
@@ -43,7 +44,7 @@ class HttpRequest
      */
     public function send()
     {
-        curl_setopt($this->ch, CURLOPT_USERAGENT, 'Mozilla 5.0 ('.__CLASS__.' v'.self::VERSION.')');
+        curl_setopt($this->ch, CURLOPT_USERAGENT, 'Mozilla 5.0 (' . __CLASS__ . ' v' . self::VERSION . ')');
         curl_setopt($this->ch, CURLOPT_HEADER, true);
         curl_setopt($this->ch, CURLINFO_HEADER_OUT, true);
         curl_setopt($this->ch, CURLOPT_RETURNTRANSFER, true);
@@ -88,6 +89,21 @@ class HttpRequest
     public function setQueryData(array $query)
     {
         $this->query = array_merge($this->query, $query);
+        return $this;
+    }
+
+    /**
+     * @param array $cookies
+     * @return HttpRequest
+     */
+    public function setCookies(array $cookies)
+    {
+        foreach ($cookies as $name => $value) {
+            unset($cookies[$name]);
+            array_push($cookies, $name .'='. $value);
+        }
+        $this->cookies = $cookies;
+        curl_setopt($this->ch, CURLOPT_COOKIE, implode(';', $this->cookies));
         return $this;
     }
 

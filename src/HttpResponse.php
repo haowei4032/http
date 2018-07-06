@@ -10,6 +10,10 @@ class HttpResponse
     private $header = null;
     private $body = null;
 
+    /**
+     * HttpResponse constructor.
+     * @param $ch
+     */
     public function __construct($ch)
     {
         $this->ch = $ch;
@@ -43,13 +47,25 @@ class HttpResponse
         return $this->info['http_code'];
     }
 
+    /**
+     * @param string $file
+     * @return bool|int
+     */
     public function asFile($file)
     {
         return file_put_contents($file, $this->getBody());
     }
 
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->getBody();
+    }
+
+    public function __destruct()
+    {
+        if ($this->ch) curl_close($this->ch);
     }
 }
